@@ -2,18 +2,18 @@ package ru.skypro.homework.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(description = "Данные для регистрации пользователя")
-public class Register {
-    @Schema(description = "логин", minLength = 4, maxLength = 32)
-    private String username;
+@Schema(description = "Пользователь")
+public class User {
+    @Schema(description = "id пользователя")
+    private Integer id;
 
-    @Schema(description = "пароль", minLength = 8, maxLength = 16)
-    private String password;
+    @Schema(description = "логин пользователя")
+    private String email;
 
-    @Schema(description = "имя пользователя", minLength = 2, maxLength = 16)
+    @Schema(description = "имя пользователя")
     private String firstName;
 
-    @Schema(description = "фамилия пользователя", minLength = 2, maxLength = 16)
+    @Schema(description = "фамилия пользователя")
     private String lastName;
 
     @Schema(description = "телефон пользователя")
@@ -22,11 +22,14 @@ public class Register {
     @Schema(description = "роль пользователя")
     private Role role;
 
-    public String getUsername() { return username; }
-    public void setUsername(String username) { this.username = username; }
+    @Schema(description = "ссылка на аватар пользователя")
+    private String image;
 
-    public String getPassword() { return password; }
-    public void setPassword(String password) { this.password = password; }
+    public Integer getId() { return id; }
+    public void setId(Integer id) { this.id = id; }
+
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
 
     public String getFirstName() { return firstName; }
     public void setFirstName(String firstName) { this.firstName = firstName; }
@@ -39,4 +42,7 @@ public class Register {
 
     public Role getRole() { return role; }
     public void setRole(Role role) { this.role = role; }
+
+    public String getImage() { return image; }
+    public void setImage(String image) { this.image = image; }
 }
