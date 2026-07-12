@@ -11,12 +11,19 @@ import org.springframework.web.bind.annotation.*;
 import ru.skypro.homework.dto.Comment;
 import ru.skypro.homework.dto.Comments;
 import ru.skypro.homework.dto.CreateOrUpdateComment;
+import ru.skypro.homework.service.CommentService;
 
 @CrossOrigin(value = "http://localhost:3000")
 @RestController
 @RequestMapping("/ads/{id}/comments")
 @Tag(name = "Комментарии", description = "Управление комментариями к объявлениям")
 public class CommentController {
+
+    private final CommentService commentService;
+
+    public CommentController(CommentService commentService) {
+        this.commentService = commentService;
+    }
 
     @Operation(summary = "Получение комментариев объявления", description = "Возвращает список комментариев к объявлению")
     @ApiResponse(responseCode = "200", description = "OK",
@@ -25,8 +32,7 @@ public class CommentController {
     @ApiResponse(responseCode = "404", description = "Not found")
     @GetMapping
     public ResponseEntity<Comments> getComments(@PathVariable Integer id) {
-        Comments comments = new Comments();
-        return ResponseEntity.ok(comments);
+        return ResponseEntity.ok(commentService.getComments(id));
     }
 
     @Operation(summary = "Добавление комментария к объявлению", description = "Создает новый комментарий")
@@ -39,8 +45,7 @@ public class CommentController {
             @PathVariable Integer id,
             @RequestBody CreateOrUpdateComment comment,
             Authentication authentication) {
-        Comment result = new Comment();
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(commentService.addComment(id, comment, authentication.getName()));
     }
 
     @Operation(summary = "Удаление комментария", description = "Удаляет комментарий по id")
@@ -53,6 +58,7 @@ public class CommentController {
             @PathVariable Integer id,
             @PathVariable Integer commentId,
             Authentication authentication) {
+        commentService.deleteComment(id, commentId, authentication.getName());
         return ResponseEntity.ok().build();
     }
 
@@ -68,7 +74,6 @@ public class CommentController {
             @PathVariable Integer commentId,
             @RequestBody CreateOrUpdateComment comment,
             Authentication authentication) {
-        Comment result = new Comment();
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(commentService.updateComment(id, commentId, comment, authentication.getName()));
     }
 }

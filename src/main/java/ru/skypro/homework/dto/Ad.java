@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "Объявление")
 public class Ad {
+
     @Schema(description = "id автора объявления")
     private Integer author;
 
@@ -19,18 +20,43 @@ public class Ad {
     @Schema(description = "заголовок объявления")
     private String title;
 
-    public Integer getAuthor() { return author; }
-    public void setAuthor(Integer author) { this.author = author; }
+    public Integer getAuthor() {
+        return author;
+    }
 
-    public String getImage() { return image; }
-    public void setImage(String image) { this.image = image; }
+    public void setAuthor(Integer author) {
+        this.author = author;
+    }
 
-    public Integer getPk() { return pk; }
-    public void setPk(Integer pk) { this.pk = pk; }
+    public String getImage() {
+        return image;
+    }
 
-    public Integer getPrice() { return price; }
-    public void setPrice(Integer price) { this.price = price; }
+    public void setImage(String image) {
+        this.image = image;
+    }
 
-    public String getTitle() { return title; }
-    public void setTitle(String title) { this.title = title; }
+    public Integer getPk() {
+        return pk;
+    }
+
+    public void setPk(Integer pk) {
+        this.pk = pk;
+    }
+
+    public Integer getPrice() {
+        return price;
+    }
+
+    public void setPrice(Integer price) {
+        this.price = price;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
 }

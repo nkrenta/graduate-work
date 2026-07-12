@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "Комментарий")
 public class Comment {
+
     @Schema(description = "id автора комментария")
     private Integer author;
 
@@ -22,21 +23,51 @@ public class Comment {
     @Schema(description = "текст комментария")
     private String text;
 
-    public Integer getAuthor() { return author; }
-    public void setAuthor(Integer author) { this.author = author; }
+    public Integer getAuthor() {
+        return author;
+    }
 
-    public String getAuthorImage() { return authorImage; }
-    public void setAuthorImage(String authorImage) { this.authorImage = authorImage; }
+    public void setAuthor(Integer author) {
+        this.author = author;
+    }
 
-    public String getAuthorFirstName() { return authorFirstName; }
-    public void setAuthorFirstName(String authorFirstName) { this.authorFirstName = authorFirstName; }
+    public String getAuthorImage() {
+        return authorImage;
+    }
 
-    public Long getCreatedAt() { return createdAt; }
-    public void setCreatedAt(Long createdAt) { this.createdAt = createdAt; }
+    public void setAuthorImage(String authorImage) {
+        this.authorImage = authorImage;
+    }
 
-    public Integer getPk() { return pk; }
-    public void setPk(Integer pk) { this.pk = pk; }
+    public String getAuthorFirstName() {
+        return authorFirstName;
+    }
 
-    public String getText() { return text; }
-    public void setText(String text) { this.text = text; }
+    public void setAuthorFirstName(String authorFirstName) {
+        this.authorFirstName = authorFirstName;
+    }
+
+    public Long getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Long createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Integer getPk() {
+        return pk;
+    }
+
+    public void setPk(Integer pk) {
+        this.pk = pk;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
+    }
 }

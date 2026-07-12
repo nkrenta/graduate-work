@@ -1,36 +1,42 @@
-package ru.skypro.homework.dto;
+package ru.skypro.homework.entity;
 
-import io.swagger.v3.oas.annotations.media.Schema;
+import ru.skypro.homework.dto.Role;
 
-@Schema(description = "Пользователь")
-public class User {
+import javax.persistence.*;
 
-    @Schema(description = "id пользователя")
-    private Integer id;
+@Entity
+@Table(name = "users")
+public class UserEntity {
 
-    @Schema(description = "логин пользователя")
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false, unique = true)
     private String email;
 
-    @Schema(description = "имя пользователя")
+    @Column(nullable = false)
+    private String password;
+
+    @Column(nullable = false)
     private String firstName;
 
-    @Schema(description = "фамилия пользователя")
+    @Column(nullable = false)
     private String lastName;
 
-    @Schema(description = "телефон пользователя")
     private String phone;
 
-    @Schema(description = "роль пользователя")
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Role role;
 
-    @Schema(description = "ссылка на аватар пользователя")
     private String image;
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -40,6 +46,14 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getFirstName() {
