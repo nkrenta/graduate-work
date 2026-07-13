@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -15,13 +16,19 @@ import ru.skypro.homework.dto.UpdateUser;
 import ru.skypro.homework.dto.User;
 import ru.skypro.homework.service.UserService;
 
-@CrossOrigin(value = "http://localhost:3000")
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
 @RestController
 @RequestMapping("/users")
 @Tag(name = "Пользователи", description = "Управление пользователями")
 public class UserController {
 
     private final UserService userService;
+
+    @Value("${upload.path:uploads}")
+    private String uploadPath;
 
     public UserController(UserService userService) {
         this.userService = userService;
@@ -34,6 +41,8 @@ public class UserController {
     @PostMapping("/set_password")
     public ResponseEntity<?> setPassword(@RequestBody NewPassword newPassword,
                                          Authentication authentication) {
+        userService.setPassword(authentication.getName(),
+                newPassword.getCurrentPassword(), newPassword.getNewPassword());
         return ResponseEntity.ok().build();
     }
 
@@ -63,7 +72,11 @@ public class UserController {
     @ApiResponse(responseCode = "401", description = "Unauthorized")
     @PatchMapping(value = "/me/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<User> updateUserImage(@RequestParam MultipartFile image,
-                                                Authentication authentication) {
+                                                Authentication authentication) throws IOException {
+        Path dirPath = Path.of(uploadPath, "users");
+        Files.createDirectories(dirPath);
+        Path filePath = dirPath.resolve(image.getOriginalFilename());
+        Files.copy(image.getInputStream(), filePath);
         String imagePath = "/images/users/" + image.getOriginalFilename();
         return ResponseEntity.ok(userService.updateUserImage(authentication.getName(), imagePath));
     }

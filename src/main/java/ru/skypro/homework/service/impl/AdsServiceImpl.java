@@ -6,9 +6,11 @@ import ru.skypro.homework.dto.Ads;
 import ru.skypro.homework.dto.CreateOrUpdateAd;
 import ru.skypro.homework.dto.ExtendedAd;
 import ru.skypro.homework.entity.AdEntity;
+import ru.skypro.homework.entity.CommentEntity;
 import ru.skypro.homework.entity.UserEntity;
 import ru.skypro.homework.mapper.AdMapper;
 import ru.skypro.homework.repository.AdRepository;
+import ru.skypro.homework.repository.CommentRepository;
 import ru.skypro.homework.service.AdsService;
 import ru.skypro.homework.service.UserService;
 
@@ -25,11 +27,14 @@ public class AdsServiceImpl implements AdsService {
     private final AdRepository adRepository;
     private final AdMapper adMapper;
     private final UserService userService;
+    private final CommentRepository commentRepository;
 
-    public AdsServiceImpl(AdRepository adRepository, AdMapper adMapper, UserService userService) {
+    public AdsServiceImpl(AdRepository adRepository, AdMapper adMapper, UserService userService,
+                          CommentRepository commentRepository) {
         this.adRepository = adRepository;
         this.adMapper = adMapper;
         this.userService = userService;
+        this.commentRepository = commentRepository;
     }
 
     @Override
@@ -69,6 +74,8 @@ public class AdsServiceImpl implements AdsService {
         if (!entity.getAuthor().getEmail().equals(authorEmail)) {
             throw new RuntimeException(NOT_AUTHORIZED_TO_DELETE);
         }
+        List<CommentEntity> comments = commentRepository.findByAdIdOrderByCreatedAtDesc(id.longValue());
+        commentRepository.deleteAll(comments);
         adRepository.delete(entity);
     }
 

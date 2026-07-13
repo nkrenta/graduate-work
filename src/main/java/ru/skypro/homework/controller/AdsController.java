@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -16,13 +17,19 @@ import ru.skypro.homework.dto.CreateOrUpdateAd;
 import ru.skypro.homework.dto.ExtendedAd;
 import ru.skypro.homework.service.AdsService;
 
-@CrossOrigin(value = "http://localhost:3000")
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
 @RestController
 @RequestMapping("/ads")
 @Tag(name = "Объявления", description = "Управление объявлениями")
 public class AdsController {
 
     private final AdsService adsService;
+
+    @Value("${upload.path:uploads}")
+    private String uploadPath;
 
     public AdsController(AdsService adsService) {
         this.adsService = adsService;
@@ -44,8 +51,8 @@ public class AdsController {
     public ResponseEntity<Ad> addAd(
             @RequestPart("properties") CreateOrUpdateAd properties,
             @RequestPart("image") MultipartFile image,
-            Authentication authentication) {
-        String imagePath = "/images/ads/" + image.getOriginalFilename();
+            Authentication authentication) throws IOException {
+        String imagePath = saveImage(image, "ads");
         Ad ad = adsService.addAd(properties, imagePath, authentication.getName());
         return ResponseEntity.status(201).body(ad);
     }
@@ -105,8 +112,17 @@ public class AdsController {
     public ResponseEntity<Ad> updateImage(
             @PathVariable Integer id,
             @RequestParam MultipartFile image,
-            Authentication authentication) {
-        String imagePath = "/images/ads/" + image.getOriginalFilename();
+            Authentication authentication) throws IOException {
+        String imagePath = saveImage(image, "ads");
         return ResponseEntity.ok(adsService.updateImage(id, imagePath, authentication.getName()));
+    }
+
+    private String saveImage(MultipartFile image, String subfolder) throws IOException {
+        String filename = image.getOriginalFilename();
+        Path dirPath = Path.of(uploadPath, subfolder);
+        Files.createDirectories(dirPath);
+        Path filePath = dirPath.resolve(filename);
+        Files.copy(image.getInputStream(), filePath);
+        return "/images/" + subfolder + "/" + filename;
     }
 }

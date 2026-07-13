@@ -13,6 +13,8 @@ public interface UserService {
 
     User updateUserImage(String email, String imagePath);
 
+    void setPassword(String email, String currentPassword, String newPassword);
+
     Optional<UserEntity> findByEmail(String email);
 
     UserEntity getEntityByEmail(String email);

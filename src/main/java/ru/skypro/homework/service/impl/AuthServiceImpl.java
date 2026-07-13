@@ -1,5 +1,9 @@
 package ru.skypro.homework.service.impl;
 
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.skypro.homework.dto.Register;
@@ -14,20 +18,27 @@ public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder encoder;
+    private final AuthenticationManager authenticationManager;
 
     public AuthServiceImpl(UserRepository userRepository,
                            UserMapper userMapper,
-                           PasswordEncoder passwordEncoder) {
+                           PasswordEncoder passwordEncoder,
+                           AuthenticationManager authenticationManager) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
         this.encoder = passwordEncoder;
+        this.authenticationManager = authenticationManager;
     }
 
     @Override
     public boolean login(String userName, String password) {
-        return userRepository.findByEmail(userName)
-                .map(user -> encoder.matches(password, user.getPassword()))
-                .orElse(false);
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(userName, password));
+            return authentication.isAuthenticated();
+        } catch (AuthenticationException e) {
+            return false;
+        }
     }
 
     @Override

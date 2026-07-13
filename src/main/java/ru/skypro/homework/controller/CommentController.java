@@ -13,7 +13,6 @@ import ru.skypro.homework.dto.Comments;
 import ru.skypro.homework.dto.CreateOrUpdateComment;
 import ru.skypro.homework.service.CommentService;
 
-@CrossOrigin(value = "http://localhost:3000")
 @RestController
 @RequestMapping("/ads/{id}/comments")
 @Tag(name = "Комментарии", description = "Управление комментариями к объявлениям")
