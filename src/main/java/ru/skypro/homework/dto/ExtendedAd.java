@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "Расширенная информация об объявлении")
 public class ExtendedAd {
+
     @Schema(description = "id объявления")
     private Integer pk;
 
@@ -31,30 +32,75 @@ public class ExtendedAd {
     @Schema(description = "заголовок объявления")
     private String title;
 
-    public Integer getPk() { return pk; }
-    public void setPk(Integer pk) { this.pk = pk; }
+    public Integer getPk() {
+        return pk;
+    }
 
-    public String getAuthorFirstName() { return authorFirstName; }
-    public void setAuthorFirstName(String authorFirstName) { this.authorFirstName = authorFirstName; }
+    public void setPk(Integer pk) {
+        this.pk = pk;
+    }
 
-    public String getAuthorLastName() { return authorLastName; }
-    public void setAuthorLastName(String authorLastName) { this.authorLastName = authorLastName; }
+    public String getAuthorFirstName() {
+        return authorFirstName;
+    }
 
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
+    public void setAuthorFirstName(String authorFirstName) {
+        this.authorFirstName = authorFirstName;
+    }
 
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
+    public String getAuthorLastName() {
+        return authorLastName;
+    }
 
-    public String getImage() { return image; }
-    public void setImage(String image) { this.image = image; }
+    public void setAuthorLastName(String authorLastName) {
+        this.authorLastName = authorLastName;
+    }
 
-    public String getPhone() { return phone; }
-    public void setPhone(String phone) { this.phone = phone; }
+    public String getDescription() {
+        return description;
+    }
 
-    public Integer getPrice() { return price; }
-    public void setPrice(Integer price) { this.price = price; }
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-    public String getTitle() { return title; }
-    public void setTitle(String title) { this.title = title; }
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public Integer getPrice() {
+        return price;
+    }
+
+    public void setPrice(Integer price) {
+        this.price = price;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
 }
