@@ -19,4 +19,6 @@ public interface AdsService {
     Ads getAdsMe(String authorEmail);
 
     Ad updateImage(Integer id, String imagePath, String authorEmail);
+
+    boolean isAdOwner(Integer id, String email);
 }

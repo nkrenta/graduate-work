@@ -12,4 +12,6 @@ public interface CommentService {
     void deleteComment(Integer adId, Integer commentId, String authorEmail);
 
     Comment updateComment(Integer adId, Integer commentId, CreateOrUpdateComment commentDto, String authorEmail);
+
+    boolean isCommentOwner(Integer commentId, String email);
 }

@@ -1,5 +1,6 @@
 package ru.skypro.homework.service.impl;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import ru.skypro.homework.dto.Comment;
 import ru.skypro.homework.dto.Comments;
@@ -16,13 +17,11 @@ import ru.skypro.homework.service.UserService;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Service
+@Service("commentService")
 public class CommentServiceImpl implements CommentService {
 
     private static final String AD_NOT_FOUND = "Ad not found: ";
     private static final String COMMENT_NOT_FOUND = "Comment not found: ";
-    private static final String NOT_AUTHORIZED_TO_UPDATE = "Not authorized to update this comment";
-    private static final String NOT_AUTHORIZED_TO_DELETE = "Not authorized to delete this comment";
 
     private final CommentRepository commentRepository;
     private final AdRepository adRepository;
@@ -69,28 +68,29 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    @PreAuthorize("@commentService.isCommentOwner(#commentId, authentication.name)")
     public void deleteComment(Integer adId, Integer commentId, String authorEmail) {
         CommentEntity entity = commentRepository.findById(commentId.longValue())
                 .orElseThrow(() -> new RuntimeException(COMMENT_NOT_FOUND + commentId));
-
-        if (!entity.getAuthor().getEmail().equals(authorEmail)) {
-            throw new RuntimeException(NOT_AUTHORIZED_TO_DELETE);
-        }
 
         commentRepository.delete(entity);
     }
 
     @Override
+    @PreAuthorize("@commentService.isCommentOwner(#commentId, authentication.name)")
     public Comment updateComment(Integer adId, Integer commentId, CreateOrUpdateComment commentDto, String authorEmail) {
         CommentEntity entity = commentRepository.findById(commentId.longValue())
                 .orElseThrow(() -> new RuntimeException(COMMENT_NOT_FOUND + commentId));
 
-        if (!entity.getAuthor().getEmail().equals(authorEmail)) {
-            throw new RuntimeException(NOT_AUTHORIZED_TO_UPDATE);
-        }
-
         entity.setText(commentDto.getText());
         CommentEntity saved = commentRepository.save(entity);
         return commentMapper.toDto(saved);
+    }
+
+    @Override
+    public boolean isCommentOwner(Integer commentId, String email) {
+        return commentRepository.findById(commentId.longValue())
+                .map(entity -> entity.getAuthor().getEmail().equals(email))
+                .orElse(false);
     }
 }
