@@ -33,4 +33,5 @@ build/
 .vscode/
 
 ###CustomDataFolders###
-*./uploads
+.uploads
+.pictures_for_tests

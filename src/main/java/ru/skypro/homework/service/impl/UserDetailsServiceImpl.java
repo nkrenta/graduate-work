@@ -7,6 +7,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import ru.skypro.homework.repository.UserRepository;
 
+/**
+ * Реализация {@link UserDetailsService} для Spring Security.
+ * Загружает данные пользователя из базы по email для аутентификации.
+ */
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
 
