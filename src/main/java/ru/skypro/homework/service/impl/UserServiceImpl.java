@@ -11,6 +11,10 @@ import ru.skypro.homework.service.UserService;
 
 import java.util.Optional;
 
+/**
+ * Реализация {@link UserService}.
+ * Обновление профиля, аватара и пароля через UserRepository и UserMapper.
+ */
 @Service
 public class UserServiceImpl implements UserService {
 

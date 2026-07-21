@@ -17,6 +17,10 @@ import ru.skypro.homework.service.UserService;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Реализация {@link CommentService}.
+ * Работает с репозиторием комментариев и маппингом DTO.
+ */
 @Service("commentService")
 public class CommentServiceImpl implements CommentService {
 

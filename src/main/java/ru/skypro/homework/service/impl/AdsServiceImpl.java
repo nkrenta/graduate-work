@@ -22,6 +22,10 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Реализация {@link AdsService}.
+ * Работает с репозиторием объявлений, маппингом DTO и управлением файлами изображений.
+ */
 @Service("adsService")
 public class AdsServiceImpl implements AdsService {
 

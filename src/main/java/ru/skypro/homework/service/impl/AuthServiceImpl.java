@@ -12,6 +12,10 @@ import ru.skypro.homework.mapper.UserMapper;
 import ru.skypro.homework.repository.UserRepository;
 import ru.skypro.homework.service.AuthService;
 
+/**
+ * Реализация {@link AuthService}.
+ * Аутентификация через AuthenticationManager, регистрация через UserRepository.
+ */
 @Service
 public class AuthServiceImpl implements AuthService {
 
