@@ -20,6 +20,7 @@ import ru.skypro.homework.service.AdsService;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/ads")
@@ -118,11 +119,29 @@ public class AdsController {
     }
 
     private String saveImage(MultipartFile image, String subfolder) throws IOException {
-        String filename = image.getOriginalFilename();
+        validateImage(image);
+        String originalFilename = image.getOriginalFilename();
+        String extension = "";
+        int dotIndex = originalFilename != null ? originalFilename.lastIndexOf('.') : -1;
+        if (dotIndex > 0) {
+            extension = originalFilename.substring(dotIndex);
+        }
+        String uniqueFilename = UUID.randomUUID() + extension;
+
         Path dirPath = Path.of(uploadPath, subfolder);
         Files.createDirectories(dirPath);
-        Path filePath = dirPath.resolve(filename);
+        Path filePath = dirPath.resolve(uniqueFilename);
         Files.copy(image.getInputStream(), filePath);
-        return "/images/" + subfolder + "/" + filename;
+        return "/images/" + subfolder + "/" + uniqueFilename;
+    }
+
+    private void validateImage(MultipartFile file) {
+        String contentType = file.getContentType();
+        if (contentType == null || !contentType.matches("image/(png|jpeg|gif)")) {
+            throw new RuntimeException("Only PNG, JPEG, GIF images are allowed");
+        }
+        if (file.getSize() > 5 * 1024 * 1024) {
+            throw new RuntimeException("File size must not exceed 5 MB");
+        }
     }
 }

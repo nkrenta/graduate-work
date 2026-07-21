@@ -1,5 +1,7 @@
 package ru.skypro.homework.service.impl;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import ru.skypro.homework.dto.Ad;
 import ru.skypro.homework.dto.Ads;
@@ -14,20 +16,24 @@ import ru.skypro.homework.repository.CommentRepository;
 import ru.skypro.homework.service.AdsService;
 import ru.skypro.homework.service.UserService;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Service
+@Service("adsService")
 public class AdsServiceImpl implements AdsService {
 
     private static final String AD_NOT_FOUND = "Ad not found: ";
-    private static final String NOT_AUTHORIZED_TO_DELETE = "Not authorized to delete this ad";
-    private static final String NOT_AUTHORIZED_TO_UPDATE = "Not authorized to update this ad";
 
     private final AdRepository adRepository;
     private final AdMapper adMapper;
     private final UserService userService;
     private final CommentRepository commentRepository;
+
+    @Value("${upload.path:uploads}")
+    private String uploadPath;
 
     public AdsServiceImpl(AdRepository adRepository, AdMapper adMapper, UserService userService,
                           CommentRepository commentRepository) {
@@ -68,11 +74,17 @@ public class AdsServiceImpl implements AdsService {
     }
 
     @Override
+    @PreAuthorize("@adsService.isAdOwner(#id, authentication.name)")
     public void removeAd(Integer id, String authorEmail) {
         AdEntity entity = adRepository.findById(id.longValue())
                 .orElseThrow(() -> new RuntimeException(AD_NOT_FOUND + id));
-        if (!entity.getAuthor().getEmail().equals(authorEmail)) {
-            throw new RuntimeException(NOT_AUTHORIZED_TO_DELETE);
+        if (entity.getImage() != null) {
+            Path imagePath = Path.of(uploadPath, entity.getImage().replaceFirst("^/images/", ""));
+            try {
+                Files.deleteIfExists(imagePath);
+            } catch (IOException e) {
+                // логируем, но не прерываем удаление объявления
+            }
         }
         List<CommentEntity> comments = commentRepository.findByAdIdOrderByCreatedAtDesc(id.longValue());
         commentRepository.deleteAll(comments);
@@ -80,12 +92,10 @@ public class AdsServiceImpl implements AdsService {
     }
 
     @Override
+    @PreAuthorize("@adsService.isAdOwner(#id, authentication.name)")
     public Ad updateAd(Integer id, CreateOrUpdateAd updateAd, String authorEmail) {
         AdEntity entity = adRepository.findById(id.longValue())
                 .orElseThrow(() -> new RuntimeException(AD_NOT_FOUND + id));
-        if (!entity.getAuthor().getEmail().equals(authorEmail)) {
-            throw new RuntimeException(NOT_AUTHORIZED_TO_UPDATE);
-        }
         adMapper.updateEntityFromDto(updateAd, entity);
         AdEntity saved = adRepository.save(entity);
         return adMapper.toDto(saved);
@@ -106,14 +116,27 @@ public class AdsServiceImpl implements AdsService {
     }
 
     @Override
+    @PreAuthorize("@adsService.isAdOwner(#id, authentication.name)")
     public Ad updateImage(Integer id, String imagePath, String authorEmail) {
         AdEntity entity = adRepository.findById(id.longValue())
                 .orElseThrow(() -> new RuntimeException(AD_NOT_FOUND + id));
-        if (!entity.getAuthor().getEmail().equals(authorEmail)) {
-            throw new RuntimeException(NOT_AUTHORIZED_TO_UPDATE);
+        if (entity.getImage() != null) {
+            Path oldPath = Path.of(uploadPath, entity.getImage().replaceFirst("^/images/", ""));
+            try {
+                Files.deleteIfExists(oldPath);
+            } catch (IOException e) {
+                // логируем, но не прерываем обновление
+            }
         }
         entity.setImage(imagePath);
         AdEntity saved = adRepository.save(entity);
         return adMapper.toDto(saved);
+    }
+
+    @Override
+    public boolean isAdOwner(Integer id, String email) {
+        return adRepository.findById(id.longValue())
+                .map(entity -> entity.getAuthor().getEmail().equals(email))
+                .orElse(false);
     }
 }

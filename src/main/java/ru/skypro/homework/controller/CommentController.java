@@ -48,7 +48,7 @@ public class CommentController {
     }
 
     @Operation(summary = "Удаление комментария", description = "Удаляет комментарий по id")
-    @ApiResponse(responseCode = "200", description = "OK")
+    @ApiResponse(responseCode = "204", description = "No Content")
     @ApiResponse(responseCode = "401", description = "Unauthorized")
     @ApiResponse(responseCode = "403", description = "Forbidden")
     @ApiResponse(responseCode = "404", description = "Not found")
@@ -58,7 +58,7 @@ public class CommentController {
             @PathVariable Integer commentId,
             Authentication authentication) {
         commentService.deleteComment(id, commentId, authentication.getName());
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     @Operation(summary = "Обновление комментария", description = "Обновляет данные комментария")

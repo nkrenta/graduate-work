@@ -19,6 +19,7 @@ import ru.skypro.homework.service.UserService;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/users")
@@ -73,11 +74,38 @@ public class UserController {
     @PatchMapping(value = "/me/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<User> updateUserImage(@RequestParam MultipartFile image,
                                                 Authentication authentication) throws IOException {
+        validateImage(image);
+
+        // Удаление старого аватара
+        User currentUser = userService.getUser(authentication.getName());
+        if (currentUser.getImage() != null) {
+            Path oldPath = Path.of(uploadPath, currentUser.getImage().replaceFirst("^/images/", ""));
+            Files.deleteIfExists(oldPath);
+        }
+
+        String originalFilename = image.getOriginalFilename();
+        String extension = "";
+        int dotIndex = originalFilename != null ? originalFilename.lastIndexOf('.') : -1;
+        if (dotIndex > 0) {
+            extension = originalFilename.substring(dotIndex);
+        }
+        String uniqueFilename = UUID.randomUUID() + extension;
+
         Path dirPath = Path.of(uploadPath, "users");
         Files.createDirectories(dirPath);
-        Path filePath = dirPath.resolve(image.getOriginalFilename());
+        Path filePath = dirPath.resolve(uniqueFilename);
         Files.copy(image.getInputStream(), filePath);
-        String imagePath = "/images/users/" + image.getOriginalFilename();
+        String imagePath = "/images/users/" + uniqueFilename;
         return ResponseEntity.ok(userService.updateUserImage(authentication.getName(), imagePath));
+    }
+
+    private void validateImage(MultipartFile file) {
+        String contentType = file.getContentType();
+        if (contentType == null || !contentType.matches("image/(png|jpeg|gif)")) {
+            throw new RuntimeException("Only PNG, JPEG, GIF images are allowed");
+        }
+        if (file.getSize() > 5 * 1024 * 1024) {
+            throw new RuntimeException("File size must not exceed 5 MB");
+        }
     }
 }
